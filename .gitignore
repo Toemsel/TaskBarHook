@@ -8,3 +8,5 @@
 /.vs/TaskbarHook/v15
 /Example/bin/Debug
 /Example/obj/Debug
+/Example/obj/Release
+/TaskbarHook/bin/Release
