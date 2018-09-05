@@ -6,3 +6,5 @@
 /TaskbarHook/obj
 /.vs/TaskbarHook/v15/Server/sqlite3
 /.vs/TaskbarHook/v15
+/Example/bin/Debug
+/Example/obj/Debug
