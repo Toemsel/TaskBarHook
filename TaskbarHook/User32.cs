@@ -5,6 +5,10 @@ namespace TaskbarHook
 {
     internal static class User32
     {
+        private const uint EVENT_SYSTEM_MOVESIZESTART = 0x000A;
+        private const uint EVENT_SYSTEM_MOVESIZEEND = 0x000B;
+        private const uint WINEVENT_OUTOFCONTEXT = 0;
+
         #region DLLImports
         [DllImport("user32.dll", SetLastError = true)]
         private static extern IntPtr GetWindow(IntPtr hWnd, uint uCmd);
@@ -26,6 +30,15 @@ namespace TaskbarHook
 
         [DllImport("user32.dll", EntryPoint = "ShowWindow", SetLastError = true)]
         private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr SetWinEventHook(uint eventMin, uint eventMax, IntPtr hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
+
+        [DllImport("user32.dll")]
+        private static extern bool UnhookWinEvent(IntPtr hWinEventHook);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
         #endregion
 
         internal static bool SetWindowPosition(IntPtr handle, int x, int y) => SetWindowPos(handle, 0, x, y, 0, 0, 0x0001) != IntPtr.Zero;
@@ -37,6 +50,16 @@ namespace TaskbarHook
         internal static bool ShowWindow(IntPtr handle) => SetVisibilityState(handle, 5);
 
         internal static bool SetVisibilityState(IntPtr handle, int state) => ShowWindow(handle, state);
+
+        internal static IntPtr RegisterWindowSizeChangeEvent(IntPtr handle, WinEventDelegate delegateCallback)
+        {
+            uint process, thread = 0;
+            thread = GetWindowThreadProcessId(handle, out process);
+
+            return SetWinEventHook(EVENT_SYSTEM_MOVESIZESTART, EVENT_SYSTEM_MOVESIZEEND, IntPtr.Zero, delegateCallback, process, thread, WINEVENT_OUTOFCONTEXT);
+        }
+
+        internal static bool UnRegisterWindowSizeChangeEvent(IntPtr hoockHandle) => UnhookWinEvent(hoockHandle);
 
         internal static IntPtr GetWindowParent(IntPtr handle) => GetParent(handle);
 

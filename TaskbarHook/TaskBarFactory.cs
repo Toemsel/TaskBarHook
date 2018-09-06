@@ -21,12 +21,16 @@ namespace TaskbarHook
         /// <exception cref="PlatformNotSupportedException">No TaskBar could be obtained.</exception>
         public static Taskbar GetTaskbar()
         {
+            if (Taskbar.Instance != null)
+                return Taskbar.Instance;
+
             IntPtr taskbarHandle = TaskBarHandle;
 
             if (taskbarHandle == IntPtr.Zero)
                 throw new PlatformNotSupportedException($"The TaskBar cound't be obtained.");
 
-            return new Taskbar(taskbarHandle);
+            Taskbar.CreateAndInitialize(taskbarHandle);
+            return GetTaskbar();
         }
     }
 }

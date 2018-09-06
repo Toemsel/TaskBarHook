@@ -4,23 +4,29 @@ using System.Threading.Tasks;
 
 namespace TaskbarHook
 {
-    public class Taskbar
+    public class Taskbar : IDisposable
     {
-        public Taskbar(IntPtr handle)
-        {
-            Handle = handle;
+        private static WinEventDelegate eventDelegate = new WinEventDelegate(TaskBarResizeEvent);
 
-            Initialize();
+        private Taskbar() { }
+
+        internal static void CreateAndInitialize(IntPtr handle)
+        {
+            Instance = new Taskbar();
+            Instance.Handle = handle;
+            Instance.Rectangle = User32.GetWindowRectangle(Instance.Handle);
+            Instance.ResizeHandle = User32.RegisterWindowSizeChangeEvent(Instance.Handle, eventDelegate);
         }
 
-        private void Initialize()
-        {
-            Rectangle = User32.GetWindowRectangle(Handle);
-        }
+        internal static Taskbar Instance { get; private set; }
 
         public IntPtr Handle { get; private set; }
 
+        private IntPtr ResizeHandle { get; set; }
+
         public Rectangle Rectangle { get; private set; }
+
+        public Action SizeChanged { get; set; }
 
         public async Task<TaskbarElement> AddToTaskbar() => await AddToTaskbar(Process.GetCurrentProcess());
 
@@ -34,5 +40,9 @@ namespace TaskbarHook
 
             return taskbarElement;
         }
+
+        private static void TaskBarResizeEvent(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime) => Instance?.SizeChanged();
+
+        public void Dispose() => User32.UnRegisterWindowSizeChangeEvent(ResizeHandle);
     }
 }
