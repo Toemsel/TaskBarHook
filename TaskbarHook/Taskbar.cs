@@ -41,7 +41,11 @@ namespace TaskbarHook
             return taskbarElement;
         }
 
-        private static void TaskBarResizeEvent(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime) => Instance?.SizeChanged();
+        private static void TaskBarResizeEvent(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
+        {
+            Instance.Rectangle = User32.GetWindowRectangle(Instance.Handle);
+            Instance?.SizeChanged();
+        }
 
         public void Dispose() => User32.UnRegisterWindowSizeChangeEvent(ResizeHandle);
     }
