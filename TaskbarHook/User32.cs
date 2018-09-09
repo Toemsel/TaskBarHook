@@ -59,6 +59,14 @@ namespace TaskbarHook
             return SetWinEventHook(EVENT_SYSTEM_MOVESIZESTART, EVENT_SYSTEM_MOVESIZEEND, IntPtr.Zero, delegateCallback, process, thread, WINEVENT_OUTOFCONTEXT);
         }
 
+        internal static IntPtr RegisterWindowElementAdded(IntPtr handle, WinEventDelegate delegateCallback)
+        {
+            uint process, thread = 0;
+            thread = GetWindowThreadProcessId(handle, out process);
+
+            return SetWinEventHook(0x8001, 0x8001, IntPtr.Zero, delegateCallback, process, thread, WINEVENT_OUTOFCONTEXT);
+        }
+
         internal static bool UnRegisterWindowSizeChangeEvent(IntPtr hoockHandle) => UnhookWinEvent(hoockHandle);
 
         internal static IntPtr GetWindowParent(IntPtr handle) => GetParent(handle);
@@ -68,6 +76,8 @@ namespace TaskbarHook
         internal static IntPtr GetWindow(IntPtr parentHandle, string className) => FindWindowEx(parentHandle, IntPtr.Zero, className, string.Empty);
 
         internal static IntPtr GetFirstWindowChild(IntPtr parentHandle) => GetWindow(parentHandle, 5);
+
+        internal static IntPtr GetNextWindow(IntPtr handle) => GetWindow(handle, 2);
 
         internal static Rectangle GetWindowRectangle(IntPtr handle)
         {
