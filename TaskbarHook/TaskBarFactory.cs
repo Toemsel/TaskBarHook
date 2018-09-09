@@ -32,12 +32,11 @@ namespace TaskbarHook
                 return Taskbar.Instance;
 
             IntPtr taskbarHandle = TaskBarHandle;
-            IntPtr sysPageHandle = SysPagerHandle;
 
             if (taskbarHandle == IntPtr.Zero)
                 throw new PlatformNotSupportedException($"The TaskBar cound't be obtained.");
 
-            Taskbar.CreateAndInitialize(taskbarHandle, sysPageHandle);
+            Taskbar.CreateAndInitialize(taskbarHandle);
             return GetTaskbar();
         }
     }

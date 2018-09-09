@@ -5,8 +5,8 @@ namespace TaskbarHook
 {
     internal static class User32
     {
-        private const uint EVENT_SYSTEM_MOVESIZESTART = 0x000A;
-        private const uint EVENT_SYSTEM_MOVESIZEEND = 0x000B;
+        //private const uint EVENT_SYSTEM_MOVESIZESTART = 0x000A;
+        //private const uint EVENT_SYSTEM_MOVESIZEEND = 0x000B;
         private const uint WINEVENT_OUTOFCONTEXT = 0;
 
         #region DLLImports
@@ -56,7 +56,7 @@ namespace TaskbarHook
             uint process, thread = 0;
             thread = GetWindowThreadProcessId(handle, out process);
 
-            return SetWinEventHook(EVENT_SYSTEM_MOVESIZESTART, EVENT_SYSTEM_MOVESIZEEND, IntPtr.Zero, delegateCallback, process, thread, WINEVENT_OUTOFCONTEXT);
+            return SetWinEventHook(0x00001, 0x7FFFF, IntPtr.Zero, delegateCallback, process, thread, WINEVENT_OUTOFCONTEXT);
         }
 
         internal static IntPtr RegisterWindowElementAdded(IntPtr handle, WinEventDelegate delegateCallback)
